@@ -1,5 +1,5 @@
-data "azurerm_resource_group" "rg_darkirondan" {
-  name = ${{secrets.NAMERG}}
+data "azurerm_resource_group" "rgdarkirondan" {
+  name = var.nameRG
 }
 
 resource "random_id" "server" {
@@ -12,13 +12,13 @@ resource "random_id" "server" {
 }
 
 resource "azurerm_virtual_network" "example" {
-  name                = ${{secrets.nameVN}}
-  resource_group_name = ${{secrets.nameRG}}
-  location            = ${{secrets.location}}
+  name                = var.nameVN
+  resource_group_name = var.nameRG
+  location            = var.location
   address_space       = ["10.0.0.0/16"]
 
   subnet {
-    name           =  "${{secrets.nameSubN}}-${random_id.server.hex}"
+    name           =  "${var.nameSubN}-${random_id.server.hex}"
     address_prefix = "10.0.1.0/24"
   }
 
