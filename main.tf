@@ -1,4 +1,4 @@
-data "azurerm_resource_group" "rg-darkirondan" {
+data "azurerm_resource_group" "rg_darkirondan" {
   name = var.nameRG
 }
 
