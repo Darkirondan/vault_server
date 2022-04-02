@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #variables
-SUB_ID="9fd96a04-37ba-4ca6-9f83-ce84a29fe15c"
-RG_NAME="rg-darkirondan"
+SUB_ID="c4774376-bc4c-48e6-93eb-c0ac26c6345d"
+RG_NAME="dan-rodriguez-tm"
 STORAGE_ACCOUNT_NAME="storagedarkirondan"
 CONTAINER_NAME="containerdarkirondan"
 
@@ -25,6 +25,6 @@ echo "Done! your storage and container are successfully created! ✅ "
 echo "Creating the service principal! 🌚 "
 
 #create service principal
-az ad sp create-for-rbac -n "replace this" --role Contributor --scopes /subscriptions/$SUB_ID/resourceGroups/$RG_NAME
+az ad sp create-for-rbac -n "contributor" --role Contributor --scopes /subscriptions/$SUB_ID/resourceGroups/$RG_NAME
 
 echo "Done! your service principal is successfully created! ✅ save this output on a safe and local place"
