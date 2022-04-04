@@ -32,3 +32,8 @@ variable "ami_id" {
     default     = "ami-0b9c9e9bdc5e6ac4f"
     description = "id of AMI"
 }
+
+variable "port" {
+    default     = "80"
+    description = "port of container"
+}

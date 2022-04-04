@@ -1,25 +1,124 @@
 data "azurerm_resource_group" "rgdarkirondan" {
   name = var.nameRG
 }
-
-resource "random_id" "server" {
-  keepers = {
-    # Generate a new id each time we switch to a new AMI id
-    ami_id = "${var.ami_id}"
-  }
-
-  byte_length = 8
-}
-
+#Creating Vitual Network
 resource "azurerm_virtual_network" "example" {
   name                = var.nameVN
   resource_group_name = var.nameRG
   location            = var.location
   address_space       = ["10.0.0.0/16"]
+}
 
-  subnet {
-    name           =  "${var.nameSubN}-${random_id.server.hex}"
-    address_prefix = "10.0.1.0/24"
+# Create subnet
+resource "azurerm_subnet" "myterraformsubnet" {
+  name                 = var.nameSubN
+  resource_group_name  = var.nameRG
+  virtual_network_name = var.nameVN
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+# Create public IPs
+resource "azurerm_public_ip" "public_ip" {
+  name                = "PublicIP"
+  location            = var.location
+  resource_group_name = var.nameRG
+  allocation_method   = "Static"
+}
+
+# Create Network Security Group and rule
+resource "azurerm_network_security_group" "sec_group" {
+  name                = "myNetworkSecurityGroup"
+  location            = var.location
+  resource_group_name = var.nameRG
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = var.port
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_network_interface" "myterraformnic" {
+  name                = "myNIC"
+  location            = var.location
+  resource_group_name = var.nameRG
+
+  ip_configuration {
+    name                          = "myNicConfiguration"
+    subnet_id                     = azurerm_subnet.myterraformsubnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.public_ip.id
+  }
+}
+
+# Connect the security group to the network interface
+resource "azurerm_network_interface_security_group_association" "example" {
+  network_interface_id      = azurerm_network_interface.myterraformnic.id
+  network_security_group_id = azurerm_network_security_group.sec_group.id
+}
+
+# Generate random text for a unique storage account name
+resource "random_id" "randomId" {
+  keepers = {
+    # Generate a new ID only when a new resource group is defined
+    resource_group = azurerm_resource_group.rg.name
   }
 
+  byte_length = 8
+}
+
+# Create storage account for boot diagnostics
+resource "azurerm_storage_account" "mystorageaccount" {
+  name                     = "diag${random_id.randomId.hex}"
+  location                 = var.location
+  resource_group_name      = var.nameRG
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+# Create (and display) an SSH key
+resource "tls_private_key" "example_ssh" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Create virtual machine
+resource "azurerm_linux_virtual_machine" "myterraformvm" {
+  name                  = "myVM"
+  location              = var.location
+  resource_group_name   = var.nameRG
+  network_interface_ids = [azurerm_network_interface.myterraformnic.id]
+  size                  = "Standard_DS1_v2"
+
+  os_disk {
+    name                 = "myOsDisk"
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+
+  computer_name                   = "myvm"
+  admin_username                  = "azureuser"
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = tls_private_key.example_ssh.public_key_openssh
+  }
+
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.mystorageaccount.primary_blob_endpoint
+  }
 }
