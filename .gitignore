@@ -19,3 +19,5 @@ terraform.rc
 
 secret.txt
 backend.conf
+id_rsa
+*.tfplan
