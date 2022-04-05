@@ -1,5 +1,0 @@
-nameRG = "dan-rodriguez-tm"
-nameVN = "vn-dou"
-location = "centralus"
-nameSubN = "sub"
-port = "22"
