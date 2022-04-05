@@ -6,7 +6,7 @@
 crash.log
 crash.*.log
 
-#*.tfvars
+*.tfvars
 *.tfvars.json
 
 override.tf
@@ -21,3 +21,5 @@ secret.txt
 backend.conf
 id_rsa
 *.tfplan
+
+script.sh
