@@ -1,7 +1,5 @@
 nameRG = "dan-rodriguez-tm"
 nameVN = "vn-dou"
 location = "centralus"
-nameContainer = "containerdarkirondan"
-nameSC = "storagedarkirondan"
 nameSubN = "sub"
 port = "22"

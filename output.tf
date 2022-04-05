@@ -2,16 +2,15 @@ output "resource_group_name" {
   value = var.nameRG
 }
 
-output "vmUsername" {
-  value = azurerm_linux_virtual_machine.myterraformvm.admin_username
+output "Username" {
+  value = module.vm.Username
 }
 
-output "public_ip_address" {
-  value = azurerm_linux_virtual_machine.myterraformvm.public_ip_address
+output "IP" {
+  value = module.vm.IP
 }
 
 output "tls_private_key" {
-  value     = tls_private_key.example_ssh.private_key_pem
+  value     = module.security.tls_private_key
   sensitive = true
 }
-
