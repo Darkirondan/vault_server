@@ -1,10 +1,10 @@
 variable "nameVN" {
-  default     = "Dan VN"
+  default     = "vn-security"
   description = "name of virtual network"
 }
 
 variable "nameRG" {
-    default     = "Dan RG"
+    default     = "rg-tf"
     description = "name of resource group"
 }
 
@@ -14,11 +14,11 @@ variable "location" {
 }
 
 variable "nameSubN" {
-    default     = "Dan SubN"
+    default     = "subnet-security"
     description = "name of subnet"
 }
 
 variable "port" {
-    default     = "80"
+    default     = "22"
     description = "port of container"
 }

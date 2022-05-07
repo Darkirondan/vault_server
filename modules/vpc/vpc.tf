@@ -12,6 +12,17 @@ resource "azurerm_subnet" "myterraformsubnet" {
   resource_group_name  = var.rg
   virtual_network_name = var.vn
   address_prefixes     = ["10.0.1.0/24"]
+  depends_on = [
+    azurerm_virtual_network.example
+  ]
+}
+
+# Create public IPs
+resource "azurerm_public_ip" "public_ip" {
+  name                = "PublicIP"
+  location            = var.location
+  resource_group_name = var.rg
+  allocation_method   = "Static"
 }
 
 resource "azurerm_network_interface" "myterraformnic" {
@@ -25,14 +36,9 @@ resource "azurerm_network_interface" "myterraformnic" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.public_ip.id
   }
-}
-
-# Create public IPs
-resource "azurerm_public_ip" "public_ip" {
-  name                = "PublicIP"
-  location            = var.location
-  resource_group_name = var.rg
-  allocation_method   = "Static"
+  depends_on = [
+    azurerm_subnet.myterraformsubnet
+  ]
 }
 
 # Connect the security group to the network interface

@@ -29,4 +29,7 @@ module "vm"{
   location = var.location
   network_interface_id = module.vpc.id
   ssh_key = module.security.ssh
+  depends_on = [
+    module.vpc
+  ]
 }
